@@ -1,0 +1,1538 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>BuddyUp - Campus Connections</title>
+
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/icon?family=Material+Icons"
+    />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <!-- FontAwesome for Payment Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+      :root {
+        /* Palette */
+        --primary: #60a5fa;
+        --secondary: #a78bfa;
+        --accent: #2dd4bf;
+        
+        --gradient-main: linear-gradient(135deg, #3b82f6, #8b5cf6);
+        --gradient-hover: linear-gradient(135deg, #2563eb, #7c3aed);
+        --gradient-text: linear-gradient(90deg, #60a5fa, #c084fc, #2dd4bf);
+        
+        /* Updated for Darker Theme legibility */
+        --text-main: #f1f5f9; /* Light text for body */
+        --text-muted: #cbd5e1;
+        --text-dark: #0f172a; /* Dark text for inside white cards */
+        
+        --border: rgba(255, 255, 255, 0.1);
+        --border-light: #e2e8f0;
+        
+        --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        --shadow-lg: 0 20px 50px -10px rgba(0, 0, 0, 0.3);
+        
+        /* Payment Specific */
+        --stripe-green: #10a37f;
+        --stripe-hover: #0d8a6a;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Inter", sans-serif;
+      }
+      
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        width: 100%;
+        min-height: 100vh;
+        /* Darker, Richer Blue Gradient */
+        background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 50%, #172554 100%);
+        color: var(--text-main);
+        overflow-x: hidden;
+      }
+
+      /* ---------------- ANIMATIONS ---------------- */
+      .reveal {
+        opacity: 0;
+        transform: translateY(30px);
+        transition: all 0.8s cubic-bezier(0.5, 0, 0, 1);
+      }
+      .reveal.active {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      /* ---------------- TOP NAV ---------------- */
+      .navbar {
+        position: sticky;
+        top: 0;
+        width: 100%;
+        background: rgba(15, 23, 42, 0.85); /* Darker semi-transparent nav */
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border-bottom: 1px solid var(--border);
+        z-index: 80;
+        transition: all 0.3s ease;
+      }
+
+      .nav-inner {
+        max-width: 1280px;
+        margin: 0 auto;
+        padding: 16px 24px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      .nav-left {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+      }
+
+      .menu-toggle {
+        border: none;
+        background: transparent;
+        cursor: pointer;
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+        padding: 4px;
+      }
+      .menu-toggle-line {
+        width: 24px;
+        height: 2.5px;
+        background: var(--text-main);
+        border-radius: 999px;
+        transition: 0.2s;
+      }
+      .menu-toggle:hover .menu-toggle-line {
+        background: var(--primary);
+      }
+
+      .logo {
+        font-size: 1.6rem;
+        font-weight: 800;
+        letter-spacing: -0.5px;
+        color: var(--text-main);
+        text-decoration: none;
+        cursor: pointer;
+      }
+      .logo span {
+        background: var(--gradient-text);
+        -webkit-background-clip: text;
+        color: transparent;
+      }
+
+      .nav-links {
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        align-items: center;
+        gap: 40px;
+      }
+      
+      @media (max-width: 900px) {
+        .nav-links { display: none; }
+      }
+
+      .nav-link {
+        font-size: 0.95rem;
+        font-weight: 600;
+        color: var(--text-muted);
+        text-decoration: none;
+        position: relative;
+        padding: 8px 0;
+        transition: color 0.2s;
+        cursor: pointer;
+      }
+      .nav-link:hover, .nav-link.active {
+        color: var(--primary);
+      }
+      .nav-link::after {
+        content: "";
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        width: 0;
+        height: 2px;
+        background: var(--gradient-main);
+        transition: 0.3s ease;
+      }
+      .nav-link:hover::after,
+      .nav-link.active::after {
+        width: 100%;
+      }
+
+      .nav-right {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+      }
+
+      .nav-search {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        background: rgba(255,255,255,0.1);
+        border-radius: 999px;
+        padding: 8px 16px;
+        width: 240px;
+        border: 1px solid var(--border);
+        transition: all 0.2s;
+      }
+      .nav-search:focus-within {
+        border-color: var(--primary);
+        background: rgba(255,255,255,0.15);
+      }
+      .nav-search .material-icons {
+        font-size: 1.2rem;
+        color: var(--text-muted);
+      }
+      .nav-search input {
+        border: none;
+        outline: none;
+        background: transparent;
+        width: 100%;
+        font-size: 0.9rem;
+        color: var(--text-main);
+      }
+      @media (max-width: 600px) {
+        .nav-search { display: none; }
+      }
+
+      /* Notification Button & Dropdown */
+      .notification-wrapper { 
+          position: relative;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+      }
+
+      .nav-icon-btn {
+        background: rgba(255, 255, 255, 0.05); /* Subtle glass background */
+        border: 1px solid var(--border); /* Consistent border */
+        color: var(--text-muted);
+        cursor: pointer;
+        width: 40px; /* Fixed square/circle size */
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s ease;
+        position: relative;
+      }
+      
+      .nav-icon-btn:hover {
+        background: rgba(255, 255, 255, 0.15);
+        color: var(--text-main);
+        border-color: rgba(255, 255, 255, 0.3);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      }
+      
+      .nav-icon-btn .material-icons {
+        font-size: 20px; /* Slightly smaller icon for balance */
+      }
+
+      /* Red notification dot */
+      .nav-icon-btn::after {
+        content: '';
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        width: 8px;
+        height: 8px;
+        background-color: #ef4444; /* Red */
+        border-radius: 50%;
+        border: 2px solid #0f172a; /* Match navbar bg to cut out */
+        box-shadow: 0 0 4px rgba(239, 68, 68, 0.6);
+      }
+
+      .notifications-menu {
+        position: absolute;
+        top: 55px; /* Pushed down slightly */
+        right: -80px; /* Centered better relative to icon area */
+        width: 320px;
+        background: rgba(15, 23, 42, 0.95); /* Darker background */
+        backdrop-filter: blur(12px);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        box-shadow: 0 20px 40px -5px rgba(0,0,0,0.4);
+        display: none;
+        flex-direction: column;
+        z-index: 100;
+        animation: fadeIn 0.2s ease-out;
+        overflow: hidden;
+      }
+      .notifications-menu.active { display: flex; }
+      
+      .notif-header { 
+          padding: 14px 16px; 
+          border-bottom: 1px solid var(--border); 
+          font-weight: 600; 
+          color: var(--text-main); 
+          font-size: 0.95rem;
+          background: rgba(255,255,255,0.02);
+      }
+      
+      .notif-item { 
+          padding: 14px 16px; 
+          border-bottom: 1px solid rgba(255,255,255,0.03); 
+          display: flex; 
+          gap: 14px; 
+          align-items: start; 
+          cursor: pointer; 
+          transition: background 0.2s; 
+      }
+      .notif-item:last-child { border-bottom: none; }
+      .notif-item:hover { background: rgba(255,255,255,0.05); }
+      
+      .notif-icon { 
+          width: 36px; 
+          height: 36px; 
+          border-radius: 10px; /* Soft square */
+          background: rgba(255,255,255,0.05); 
+          color: var(--primary); 
+          display: flex; 
+          align-items: center; 
+          justify-content: center; 
+          flex-shrink: 0; 
+      }
+      
+      .notif-content { flex: 1; }
+      .notif-title { font-size: 0.9rem; font-weight: 600; color: var(--text-main); margin-bottom: 2px; }
+      .notif-desc { font-size: 0.85rem; color: var(--text-muted); line-height: 1.4; }
+      .notif-time { font-size: 0.75rem; color: #64748b; margin-top: 6px; display: block; }
+
+      /* Profile Dropdown Container */
+      .profile-wrapper {
+        position: relative;
+      }
+
+      .avatar {
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        background: var(--gradient-main);
+        color: white;
+        font-weight: 700;
+        font-size: 0.95rem;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        cursor: pointer;
+        transition: transform 0.2s;
+        user-select: none;
+      }
+      .avatar:hover {
+        transform: scale(1.05);
+      }
+      .avatar .material-icons {
+        font-size: 24px;
+      }
+
+      /* Dropdown Menu Styles */
+      .dropdown-menu {
+        position: absolute;
+        top: 55px;
+        right: 0;
+        width: 220px;
+        background: rgba(15, 23, 42, 0.95);
+        backdrop-filter: blur(12px);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        box-shadow: 0 20px 40px -5px rgba(0,0,0,0.4);
+        padding: 8px;
+        display: none;
+        flex-direction: column;
+        z-index: 100;
+        animation: fadeIn 0.2s ease-out;
+      }
+      .dropdown-menu.active {
+        display: flex;
+      }
+
+      .dropdown-item {
+        padding: 10px 16px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        color: var(--text-main);
+        text-decoration: none;
+        font-size: 0.95rem;
+        font-weight: 500;
+        border-radius: 8px;
+        transition: background 0.2s;
+        cursor: pointer;
+      }
+      .dropdown-item:hover {
+        background: rgba(255,255,255,0.1);
+        color: white;
+      }
+      .dropdown-item .material-icons {
+        font-size: 20px;
+        color: var(--text-muted);
+      }
+      .dropdown-item:hover .material-icons {
+        color: var(--primary);
+      }
+
+      .dropdown-divider {
+        height: 1px;
+        background: var(--border);
+        margin: 6px 8px;
+      }
+
+      .dropdown-item.logout {
+        color: #ef4444; /* Red color for logout */
+      }
+      .dropdown-item.logout:hover {
+        background: rgba(239, 68, 68, 0.1);
+        color: #ef4444;
+      }
+      .dropdown-item.logout .material-icons {
+        color: #ef4444;
+      }
+      .dropdown-item.logout:hover .material-icons {
+        color: #ef4444;
+      }
+
+      /* ---------------- OVERLAY & SIDEBAR ---------------- */
+      .overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.5);
+        backdrop-filter: blur(4px);
+        z-index: 85;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.3s;
+      }
+      .overlay.show {
+        opacity: 1;
+        pointer-events: all;
+      }
+
+      .side-nav {
+        position: fixed;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        width: 260px;
+        background: rgba(30, 41, 59, 0.98); /* Dark slate background */
+        padding: 24px;
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        transform: translateX(-100%);
+        transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        z-index: 90;
+        box-shadow: var(--shadow-lg);
+        border-right: 1px solid var(--border);
+      }
+      .side-nav.open {
+        transform: translateX(0);
+      }
+
+      .side-nav-header {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 20px;
+        padding-bottom: 20px;
+        border-bottom: 1px solid var(--border);
+        font-weight: 700;
+        font-size: 1.1rem;
+        color: var(--text-main);
+      }
+
+      .side-links {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+      .side-link {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        border: none;
+        background: transparent;
+        color: var(--text-muted);
+        cursor: pointer;
+        padding: 12px 16px;
+        border-radius: 12px;
+        transition: all 0.2s;
+        font-weight: 500;
+      }
+      .side-link:hover {
+        background: rgba(255,255,255,0.1);
+        color: var(--primary);
+        transform: translateX(4px);
+      }
+
+      /* ---------------- SECTIONS COMMON ---------------- */
+      .page-wrap {
+        padding-bottom: 60px;
+      }
+
+      .section {
+        width: 100%;
+        max-width: 1280px;
+        margin: 0 auto;
+        padding: 100px 24px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+      }
+
+      .section h2 {
+        font-size: 2.5rem;
+        font-weight: 800;
+        color: var(--text-main);
+        margin-bottom: 16px;
+        letter-spacing: -1px;
+      }
+      .section p {
+        font-size: 1.1rem;
+        color: var(--text-muted);
+        max-width: 600px;
+        line-height: 1.6;
+        margin-bottom: 40px;
+      }
+
+      /* HERO */
+      .hero {
+        padding-top: 140px;
+        padding-bottom: 80px;
+        position: relative;
+      }
+      .hero::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 600px;
+        height: 400px;
+        background: radial-gradient(circle, rgba(59, 130, 246, 0.2) 0%, rgba(139, 92, 246, 0.1) 50%, transparent 70%);
+        filter: blur(80px);
+        z-index: -1;
+      }
+
+      .hero h1 {
+        font-size: clamp(3rem, 6vw, 5rem);
+        font-weight: 900;
+        line-height: 1.1;
+        letter-spacing: -2px;
+        margin-bottom: 24px;
+        color: var(--text-main);
+      }
+      .hero h1 span {
+        background: var(--gradient-text);
+        -webkit-background-clip: text;
+        color: transparent;
+      }
+
+      .hero-buttons {
+        display: flex;
+        gap: 16px;
+        margin-top: 20px;
+      }
+      
+      .btn-main {
+        padding: 16px 36px;
+        border-radius: 999px;
+        font-size: 1.05rem;
+        font-weight: 600;
+        cursor: pointer;
+        background: var(--gradient-main);
+        color: white;
+        border: none;
+        box-shadow: 0 10px 25px -5px rgba(59, 130, 246, 0.4);
+        transition: transform 0.2s, box-shadow 0.2s;
+      }
+      .btn-main:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 15px 30px -5px rgba(59, 130, 246, 0.5);
+        background: var(--gradient-hover);
+      }
+      
+      .btn-outline {
+        padding: 16px 36px;
+        border-radius: 999px;
+        font-size: 1.05rem;
+        font-weight: 600;
+        cursor: pointer;
+        background: rgba(255,255,255,0.05);
+        color: var(--text-main);
+        border: 2px solid rgba(255,255,255,0.2);
+        transition: all 0.2s;
+        backdrop-filter: blur(4px);
+      }
+      .btn-outline:hover {
+        border-color: var(--primary);
+        color: var(--primary);
+        background: rgba(255,255,255,0.1);
+      }
+
+      /* FEATURES GRID */
+      .features-container {
+        width: 100%;
+        margin-top: 20px;
+      }
+      
+      .feature-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 30px;
+        width: 100%;
+      }
+      
+      .feature-card {
+        /* Glassmorphism card for features */
+        background: rgba(30, 41, 59, 0.6);
+        padding: 32px;
+        border-radius: 24px;
+        text-align: left;
+        border: 1px solid var(--border);
+        box-shadow: var(--shadow-sm);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        backdrop-filter: blur(10px);
+      }
+      
+      .feature-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: var(--gradient-main);
+        opacity: 0;
+        transition: opacity 0.3s;
+      }
+      
+      .feature-card:hover {
+        transform: translateY(-8px);
+        box-shadow: var(--shadow-lg);
+        border-color: rgba(255,255,255,0.2);
+        background: rgba(30, 41, 59, 0.8);
+      }
+      
+      .feature-card:hover::before {
+        opacity: 1;
+      }
+
+      .feature-card h3 {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: var(--text-main);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      
+      .feature-card p {
+        font-size: 0.95rem;
+        color: var(--text-muted);
+        margin: 0;
+        line-height: 1.6;
+        text-align: left;
+      }
+
+      /* ---------------- DASHBOARD STYLES ---------------- */
+      .dashboard-container { max-width: 1200px; margin: 0 auto; padding-top: 60px; padding-left: 24px; padding-right: 24px; }
+      .welcome-header { margin-bottom: 40px; }
+      .welcome-title { font-size: 2.2rem; font-weight: 800; color: var(--text-main); }
+      .welcome-subtitle { font-size: 1.1rem; color: var(--text-muted); margin-top: 8px; }
+      
+      .stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 24px; margin-bottom: 40px; }
+      .stat-box { background: rgba(30, 41, 59, 0.6); border: 1px solid var(--border); padding: 24px; border-radius: 20px; backdrop-filter: blur(10px); }
+      .stat-label { color: var(--text-muted); font-size: 0.9rem; font-weight: 500; display: flex; align-items: center; gap: 8px; }
+      .stat-number { font-size: 2.5rem; font-weight: 800; color: var(--text-main); margin-top: 12px; }
+      .stat-trend { font-size: 0.85rem; margin-top: 4px; color: #34d399; }
+
+      /* ---------------- PROFILE PAGE STYLES ---------------- */
+      .profile-page-container { max-width: 900px; margin: 0 auto; padding-top: 60px; padding-left: 24px; padding-right: 24px; }
+      .profile-cover { height: 180px; background: linear-gradient(135deg, #4f46e5, #9333ea); border-radius: 24px; margin-bottom: -60px; position: relative; }
+      .profile-card { background: rgba(30, 41, 59, 0.8); border: 1px solid var(--border); border-radius: 24px; padding: 0 40px 40px 40px; backdrop-filter: blur(10px); position: relative; }
+      .profile-avatar-large { width: 120px; height: 120px; border-radius: 50%; background: white; padding: 4px; position: relative; top: -60px; display: inline-block; }
+      .profile-avatar-large img, .profile-avatar-large .placeholder-img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; background: #ddd; display:flex; align-items:center; justify-content:center; font-size:3rem; color:#666; }
+      
+      .profile-details { margin-top: -40px; }
+      .profile-name { font-size: 2rem; font-weight: 800; color: var(--text-main); }
+      .profile-role { color: var(--primary); font-weight: 600; margin-top: 4px; }
+      .profile-bio { margin-top: 20px; color: var(--text-muted); line-height: 1.6; max-width: 600px; }
+      
+      .skills-section { margin-top: 30px; }
+      .skills-title { font-size: 1.1rem; font-weight: 700; color: var(--text-main); margin-bottom: 12px; }
+      .skills-list { display: flex; flex-wrap: wrap; gap: 10px; }
+      .skill-tag { background: rgba(255,255,255,0.1); padding: 8px 16px; border-radius: 999px; font-size: 0.9rem; color: var(--text-main); border: 1px solid var(--border); }
+
+      /* ---------------- HISTORY & SETTINGS COMMON ---------------- */
+      .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px; }
+      .page-title { font-size: 1.8rem; font-weight: 700; color: var(--text-main); }
+      .filters { display: flex; gap: 12px; }
+      .filter-btn { display: flex; align-items: center; gap: 8px; padding: 8px 16px; background: rgba(30, 41, 59, 0.6); border: 1px solid var(--border); border-radius: 8px; color: var(--text-main); font-weight: 500; cursor: pointer; transition: all 0.2s; }
+      .filter-btn:hover { border-color: var(--primary); background: rgba(255,255,255,0.1); }
+      .filter-btn .material-icons { font-size: 18px; color: var(--text-muted); }
+
+      .history-list { display: flex; flex-direction: column; gap: 16px; }
+      .history-card { background: rgba(30, 41, 59, 0.6); border-radius: 16px; padding: 24px; box-shadow: var(--shadow-sm); display: grid; grid-template-columns: 1fr 1fr 1.5fr 1.5fr 1fr 1fr; align-items: center; gap: 16px; border: 1px solid var(--border); transition: transform 0.2s; backdrop-filter: blur(10px); }
+      .history-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); border-color: rgba(255,255,255,0.2); background: rgba(30, 41, 59, 0.8); }
+      .history-card .col { display: flex; flex-direction: column; gap: 6px; }
+      .history-card .label { font-size: 0.8rem; color: var(--text-muted); font-weight: 500; }
+      .history-card .value { font-size: 0.95rem; font-weight: 600; color: var(--text-main); }
+      .val-id { font-family: 'Courier New', monospace; letter-spacing: -0.5px; }
+      .val-amount { font-size: 1.1rem; }
+      .status-badge { padding: 6px 12px; border-radius: 999px; font-size: 0.85rem; font-weight: 600; text-align: center; width: fit-content; }
+      .status-success { background: rgba(16, 185, 129, 0.2); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.3); }
+
+      /* SETTINGS */
+      .settings-container { max-width: 900px; margin: 0 auto; display: flex; flex-direction: column; gap: 24px; }
+      .settings-card { background: rgba(255, 255, 255, 0.95); color: var(--text-dark); border-radius: 12px; padding: 32px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+      .settings-header { margin-bottom: 24px; }
+      .settings-title { font-size: 1.25rem; font-weight: 700; color: var(--text-dark); margin-bottom: 8px; }
+      .settings-subtitle { color: #64748b; font-size: 0.95rem; }
+      .settings-form-group { margin-bottom: 20px; }
+      .settings-label { display: block; font-size: 0.9rem; font-weight: 600; color: #334155; margin-bottom: 8px; }
+      .settings-input { width: 100%; padding: 10px 14px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 0.95rem; color: var(--text-dark); transition: border 0.2s; }
+      .settings-input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.1); }
+      .phone-group { display: flex; gap: 12px; }
+      .phone-select { width: 100px; padding: 10px; border: 1px solid #e2e8f0; border-radius: 8px; background: white; }
+      .btn-verify { background: #6366f1; color: white; border: none; padding: 8px 16px; border-radius: 6px; font-size: 0.85rem; font-weight: 600; cursor: pointer; margin-top: 8px; }
+      .photo-section { display: flex; align-items: center; gap: 24px; margin-top: 16px; padding-top: 16px; border-top: 1px solid #f1f5f9; }
+      .photo-preview { width: 80px; height: 80px; border-radius: 50%; background: #cbd5e1; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+      .photo-preview .material-icons { font-size: 48px; color: white; }
+      .btn-change-photo { border: 1px solid #e2e8f0; background: white; color: var(--text-dark); padding: 8px 16px; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 0.9rem; }
+      .btn-change-photo:hover { background: #f8fafc; }
+      .btn-save { background: #4f46e5; color: white; border: none; padding: 12px 24px; border-radius: 8px; font-weight: 600; cursor: pointer; margin-top: 24px; }
+      .btn-save:hover { background: #4338ca; }
+      .toggle-wrapper { display: flex; justify-content: space-between; align-items: center; }
+      .switch { position: relative; display: inline-block; width: 44px; height: 24px; }
+      .switch input { opacity: 0; width: 0; height: 0; }
+      .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #cbd5e1; transition: .4s; border-radius: 24px; }
+      .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
+      input:checked + .slider { background-color: #4f46e5; }
+      input:checked + .slider:before { transform: translateX(20px); }
+
+      @media (max-width: 1024px) { .history-card { grid-template-columns: 1fr 1fr; gap: 20px; } }
+      @media (max-width: 600px) { .history-card { grid-template-columns: 1fr; } .filters { display: none; } }
+
+      /* FOOTER */
+      footer { margin-top: 80px; padding: 60px 24px; text-align: center; background-color: rgba(15, 23, 42, 0.8); border-top: 1px solid var(--border); color: var(--text-muted); font-size: 0.95rem; backdrop-filter: blur(10px); }
+
+      /* AUTH MODALS */
+      .auth-backdrop { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(8px); display: none; align-items: center; justify-content: center; z-index: 120; opacity: 0; transition: opacity 0.3s; }
+      .auth-backdrop.show { display: flex; opacity: 1; }
+      .auth-modal { background: white; border-radius: 24px; padding: 32px; width: 100%; max-width: 440px; box-shadow: var(--shadow-lg); transform: translateY(20px); transition: transform 0.3s; color: var(--text-dark); }
+      .auth-backdrop.show .auth-modal { transform: translateY(0); }
+      .auth-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+      .auth-title { font-size: 1.5rem; font-weight: 800; color: var(--text-dark); }
+      .auth-close { border: none; background: #f1f5f9; width: 32px; height: 32px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; color: #64748b; transition: background 0.2s; }
+      .auth-close:hover { background: #e2e8f0; color: var(--text-dark); }
+      .auth-tabs { display: flex; gap: 6px; background: #f1f5f9; padding: 6px; border-radius: 14px; margin-bottom: 24px; }
+      .auth-tab { flex: 1; padding: 10px; border-radius: 10px; border: none; background: transparent; cursor: pointer; font-weight: 600; font-size: 0.95rem; color: #64748b; transition: all 0.2s; }
+      .auth-tab.active { background: white; color: var(--primary); box-shadow: var(--shadow-sm); }
+      .auth-form { display: none; text-align: left; animation: fadeIn 0.3s; }
+      .auth-form.active { display: block; }
+      @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+      .auth-group { margin-bottom: 18px; }
+      .auth-group label { display: block; font-size: 0.85rem; font-weight: 600; color: var(--text-dark); margin-bottom: 6px; }
+      .auth-group input, .auth-group select { width: 100%; padding: 12px 16px; border-radius: 12px; border: 1px solid var(--border-light); outline: none; font-size: 1rem; transition: all 0.2s; background: #f8fafc; color: var(--text-dark); }
+      .auth-group input:focus, .auth-group select:focus { border-color: var(--primary); background: white; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1); }
+      .auth-submit { width: 100%; margin-top: 10px; padding: 14px; border-radius: 12px; border: none; cursor: pointer; font-weight: 700; font-size: 1rem; background: var(--gradient-main); color: white; transition: opacity 0.2s; }
+      .auth-submit:hover { opacity: 0.9; }
+      .auth-note { margin-top: 16px; font-size: 0.85rem; color: #64748b; text-align: center; line-height: 1.5; }
+
+      /* PAYMENT MODAL */
+      .payment-backdrop { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(8px); opacity: 0; pointer-events: none; transition: opacity 0.3s ease; z-index: 200; display: flex; align-items: center; justify-content: center; padding: 20px; }
+      .payment-backdrop.active { opacity: 1; pointer-events: all; }
+      .checkout-modal { background: white; width: 100%; max-width: 900px; height: auto; max-height: 90vh; border-radius: 16px; box-shadow: var(--shadow-lg); display: flex; flex-direction: column; overflow: hidden; transform: translateY(20px); transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1); color: var(--text-dark); }
+      .payment-backdrop.active .checkout-modal { transform: translateY(0); }
+      .checkout-grid { display: grid; grid-template-columns: 1fr 1.3fr; height: 100%; overflow: hidden; }
+      .summary-panel { background: #f8fafc; padding: 40px; border-right: 1px solid var(--border-light); display: flex; flex-direction: column; }
+      .back-link { color: #64748b; text-decoration: none; font-size: 0.9rem; margin-bottom: 30px; display: inline-flex; align-items: center; gap: 8px; cursor: pointer; font-weight: 500; }
+      .back-link:hover { color: var(--text-dark); }
+      .order-title { font-size: 0.95rem; color: #64748b; font-weight: 500; margin-bottom: 10px; }
+      .order-price { font-size: 2.5rem; font-weight: 700; color: var(--text-dark); margin-bottom: 30px; letter-spacing: -0.5px; }
+      .line-item { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid var(--border-light); font-size: 0.95rem; }
+      .line-item span:first-child { color: var(--text-dark); font-weight: 500; }
+      .line-item span:last-child { color: var(--text-dark); font-weight: 600; }
+      .total-row { display: flex; justify-content: space-between; margin-top: auto; padding-top: 20px; font-weight: 700; font-size: 1.1rem; color: var(--text-dark); }
+      .payment-panel { padding: 40px; background: white; overflow-y: auto; }
+      .section-title { font-size: 1.1rem; font-weight: 600; margin-bottom: 16px; color: var(--text-dark); }
+      .payment-panel .input-group { margin-bottom: 24px; }
+      .payment-panel .label { display: block; font-size: 0.85rem; font-weight: 500; color: #64748b; margin-bottom: 8px; }
+      .payment-panel .input-field { width: 100%; padding: 12px 16px; border: 1px solid var(--border-light); border-radius: 6px; font-size: 1rem; transition: all 0.2s; outline: none; background: white; color: var(--text-dark); }
+      .payment-panel .input-field:focus { border-color: var(--primary); box-shadow: 0 0 0 4px rgba(96, 165, 250, 0.2); }
+      .radio-group { border: 1px solid var(--border-light); border-radius: 6px; overflow: hidden; margin-bottom: 24px; }
+      .radio-option { display: flex; align-items: center; padding: 16px; cursor: pointer; border-bottom: 1px solid var(--border-light); background: white; transition: background 0.1s; }
+      .radio-option:last-child { border-bottom: none; }
+      .radio-option:hover { background: #f9f9f9; }
+      .radio-option.selected { background: #f0f9ff; }
+      .radio-circle { width: 18px; height: 18px; border: 2px solid #d1d1d1; border-radius: 50%; margin-right: 12px; position: relative; }
+      .radio-option.selected .radio-circle { border-color: var(--primary); background: var(--primary); box-shadow: inset 0 0 0 3px white; }
+      .option-label { flex: 1; font-weight: 500; display: flex; align-items: center; gap: 10px; color: var(--text-dark); }
+      .card-icons i { font-size: 1.2rem; color: var(--text-dark); margin-left: 5px; }
+      .upi-icon { color: #64748b; font-weight: 700; font-size: 0.9rem; border: 1px solid #ddd; padding: 2px 6px; border-radius: 4px; }
+      .payment-details-form { background: #f8fafc; padding: 20px; border-radius: 8px; border: 1px solid var(--border-light); margin-bottom: 24px; animation: slideDown 0.3s ease; display: none; }
+      @keyframes slideDown { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
+      .checkbox-group { display: flex; gap: 12px; align-items: flex-start; margin-bottom: 24px; }
+      .checkbox-group input { margin-top: 4px; }
+      .checkbox-text { font-size: 0.9rem; color: #64748b; line-height: 1.4; }
+      .checkbox-text a { color: #64748b; text-decoration: underline; }
+      .subscribe-btn { width: 100%; background: var(--stripe-green); color: white; border: none; padding: 16px; font-size: 1rem; font-weight: 600; border-radius: 6px; cursor: pointer; transition: background 0.2s; margin-bottom: 20px; display: flex; justify-content: center; align-items: center; }
+      .subscribe-btn:hover { background: var(--stripe-hover); }
+      .subscribe-btn:disabled { opacity: 0.7; cursor: not-allowed; }
+      .footer-text { text-align: center; font-size: 0.85rem; color: #64748b; display: flex; align-items: center; justify-content: center; gap: 6px; }
+      .spinner { width: 18px; height: 18px; border: 2px solid rgba(255,255,255,0.3); border-radius: 50%; border-top-color: #fff; animation: spin 1s infinite linear; margin-left: 10px; display: none; }
+      @keyframes spin { to { transform: rotate(360deg); } }
+    </style>
+  </head>
+
+  <body>
+    <!-- TOP NAV -->
+    <header class="navbar">
+      <div class="nav-inner">
+        <div class="nav-left">
+          <button class="menu-toggle" id="menuToggle">
+            <span class="menu-toggle-line"></span>
+            <span class="menu-toggle-line"></span>
+            <span class="menu-toggle-line"></span>
+          </button>
+
+          <a href="#" class="logo" onclick="window.location.reload()">Buddy<span>Up</span></a>
+        </div>
+
+        <div class="nav-links">
+          <a href="#top" class="nav-link active" onclick="switchView('landing')">Home</a>
+          <a href="#features" class="nav-link" onclick="switchView('landing')">Features</a>
+          <a href="#how" class="nav-link" onclick="switchView('landing')">How it works</a>
+          <a href="#about" class="nav-link" onclick="switchView('landing')">About</a>
+          <a href="#" id="openAdminBtn" class="nav-link">Admin</a>
+        </div>
+
+        <div class="nav-right">
+          <div class="nav-search">
+            <span class="material-icons">search</span>
+            <input type="text" placeholder="Search services..." />
+          </div>
+          
+          <div class="notification-wrapper">
+            <button class="nav-icon-btn" id="notifBtn" title="Notifications">
+                <span class="material-icons">notifications</span>
+            </button>
+            <div class="notifications-menu" id="notifMenu">
+                <div class="notif-header">Notifications (3)</div>
+                <div class="notif-item">
+                    <div class="notif-icon"><span class="material-icons">payment</span></div>
+                    <div class="notif-content">
+                        <div class="notif-title">Payment Successful</div>
+                        <div class="notif-desc">You paid ₹99 for Premium subscription.</div>
+                        <span class="notif-time">2 mins ago</span>
+                    </div>
+                </div>
+                <div class="notif-item">
+                    <div class="notif-icon"><span class="material-icons">check_circle</span></div>
+                    <div class="notif-content">
+                        <div class="notif-title">Profile Verified</div>
+                        <div class="notif-desc">Your college ID has been verified.</div>
+                        <span class="notif-time">1 hour ago</span>
+                    </div>
+                </div>
+                <div class="notif-item">
+                    <div class="notif-icon"><span class="material-icons">message</span></div>
+                    <div class="notif-content">
+                        <div class="notif-title">New Request</div>
+                        <div class="notif-desc">Amit requested help with Physics.</div>
+                        <span class="notif-time">5 hours ago</span>
+                    </div>
+                </div>
+            </div>
+          </div>
+
+          <div class="profile-wrapper">
+            <div class="avatar" id="profileTrigger">
+              <span class="material-icons">person</span>
+            </div>
+            <div class="dropdown-menu" id="profileMenu">
+              <div class="dropdown-item" id="menuProfileBtn">
+                <span class="material-icons">person</span>
+                Profile
+              </div>
+              <div class="dropdown-item" id="menuSettingsBtn">
+                <span class="material-icons">settings</span>
+                Settings
+              </div>
+              <div class="dropdown-divider"></div>
+              <div class="dropdown-item logout" id="logoutBtn">
+                <span class="material-icons">logout</span>
+                Logout
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </header>
+
+    <!-- OVERLAY -->
+    <div class="overlay" id="overlay"></div>
+
+    <!-- SLIDING SIDE NAV -->
+    <nav class="side-nav" id="sideNav">
+      <div class="side-nav-header">
+        <span class="material-icons" style="color: var(--primary)">menu</span>
+        Menu
+      </div>
+
+      <div class="side-links">
+        <button class="side-link active" id="navHomeBtn" data-target="home">
+          <span class="material-icons">home</span>
+          <span>Home</span>
+        </button>
+        <button class="side-link" id="navDashboardBtn" data-target="dashboard">
+          <span class="material-icons">dashboard</span>
+          <span>Dashboard</span>
+        </button>
+        <button class="side-link" id="navHistoryBtn" data-target="history">
+          <span class="material-icons">history</span>
+          <span>History</span>
+        </button>
+        <button class="side-link" id="navPaymentBtn" data-target="payments">
+          <span class="material-icons">payment</span>
+          <span>Payments</span>
+        </button>
+        <button class="side-link" id="navProfileBtn" data-target="profile">
+          <span class="material-icons">person</span>
+          <span>Profile</span>
+        </button>
+      </div>
+    </nav>
+
+    <!-- MAIN WRAPPER (Swaps Content) -->
+    <div class="page-wrap" id="mainWrapper">
+        
+        <!-- 1. LANDING VIEW (Default) -->
+        <div id="landingView">
+            <section class="section hero reveal active" id="top">
+                <h1>Students helping <span>Students</span>.<br />And getting <span>Paid</span> for it.</h1>
+                <p>
+                The easiest way to get notes, posters, doubt help or resume reviews —
+                and the easiest way to earn through your skills in your own campus.
+                </p>
+                <div class="hero-buttons">
+                <button class="btn-main" id="loginBtn">Log In</button>
+                <button class="btn-outline" id="signupBtn">Sign Up</button>
+                </div>
+            </section>
+
+            <section class="section reveal" id="features">
+                <h2>Features</h2>
+                <p>Find what you need — without awkward DMs. Clean, simple, fast.</p>
+                
+                <div class="features-container">
+                <div class="feature-grid">
+                    <div class="feature-card reveal">
+                    <h3>💡 Skill Mentorship</h3>
+                    <p>Learn anything — guitar, piano, coding, dance, singing, debating.</p>
+                    </div>
+                    <div class="feature-card reveal">
+                    <h3>🤝 Find Buddies</h3>
+                    <p>Need a dance partner? Gym buddy? Debate teammate? Hackathon squad?</p>
+                    </div>
+                    <div class="feature-card reveal">
+                    <h3>📚 Study Help</h3>
+                    <p>Doubts before exams, difficult topics, or full tutoring.</p>
+                    </div>
+                    <div class="feature-card reveal">
+                    <h3>🚨 Emergency Aid</h3>
+                    <p>Quick campus help when you need it most — notes, charger, guidance.</p>
+                    </div>
+                    <div class="feature-card reveal">
+                    <h3>🔒 Verified Profiles</h3>
+                    <p>Only students from your campus can join. No outsiders, no weird vibes.</p>
+                    </div>
+                    <div class="feature-card reveal">
+                    <h3>💸 Secure Payments</h3>
+                    <p>Built-in payment system so no UPI spam, no awkward bargaining.</p>
+                    </div>
+                </div>
+                </div>
+            </section>
+
+            <section class="section reveal" id="how">
+                <h2>How it Works</h2>
+                <p>Simple, fast and made for campus life.</p>
+
+                <div class="features-container">
+                <div class="feature-grid">
+                    <div class="feature-card reveal">
+                    <h3>1️⃣ Tell Us What You Need</h3>
+                    <p>
+                        Drop a request — dance partner, guitar mentor, study tutor,
+                        anything. No overthinking, just post.
+                    </p>
+                    </div>
+                    <div class="feature-card reveal">
+                    <h3>2️⃣ Students Reach Out</h3>
+                    <p>
+                        People on your campus who already know that skill get notified
+                        and offer to help. Real students. Real skills.
+                    </p>
+                    </div>
+                    <div class="feature-card reveal">
+                    <h3>3️⃣ Connect &amp; Learn</h3>
+                    <p>
+                        Pick the helper you vibe with, chat, schedule a session, and
+                        start learning — online or on campus.
+                    </p>
+                    </div>
+                    <div class="feature-card reveal">
+                    <h3>4️⃣ Pay Smoothly</h3>
+                    <p>
+                        Payments happen inside the platform, safe and simple. You learn
+                        → they earn. Win-win.
+                    </p>
+                    </div>
+                </div>
+                </div>
+            </section>
+
+            <section class="section reveal" id="about" style="background: rgba(15, 23, 42, 0.4); margin-top: 40px; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); backdrop-filter: blur(10px);">
+                <h2>About Us</h2>
+                <p>
+                At <strong>BuddyUp</strong>, we’re building a campus-first space where
+                students can learn new skills, teach what they know, and support each
+                other.
+                </p>
+
+                <div class="features-container">
+                <div class="feature-grid">
+                    <div class="feature-card" style="background: rgba(255,255,255,0.05); border: none;">
+                    <h3>🌱 Why BuddyUp Exists</h3>
+                    <p>Need help? Got skills? BuddyUp makes the match.</p>
+                    </div>
+
+                    <div class="feature-card" style="background: rgba(255,255,255,0.05); border: none;">
+                    <h3>🤝 Students Teaching Students</h3>
+                    <p>
+                        BuddyUp connects learners with students who already know the
+                        skill.
+                    </p>
+                    </div>
+
+                    <div class="feature-card" style="background: rgba(255,255,255,0.05); border: none;">
+                    <h3>📚 Learning, Earning, Growing</h3>
+                    <p>
+                        Learners get affordable, friendly help. Mentors get recognised
+                        and paid for their time.
+                    </p>
+                    </div>
+
+                    <div class="feature-card" style="background: rgba(255,255,255,0.05); border: none;">
+                    <h3>🚨 Help When It’s Urgent</h3>
+                    <p>
+                        Beyond learning and skills, BuddyUp provides quick help in
+                        urgent moments — whether it’s last-minute notes or guidance.
+                    </p>
+                    </div>
+
+                    <div class="feature-card" style="background: rgba(255,255,255,0.05); border: none;">
+                    <h3>💚 Our Belief</h3>
+                    <p>
+                        We believe the best help doesn’t always come from outside
+                        experts — it often comes from someone sitting in your class.
+                    </p>
+                    </div>
+                </div>
+                </div>
+            </section>
+
+            <footer>©️ 2025 BuddyUp · Built by students, for students.</footer>
+        </div>
+
+        <!-- 2. HISTORY VIEW -->
+        <div id="historyView" style="display: none; padding-top: 60px; max-width: 1200px; margin: 0 auto; padding-left: 24px; padding-right: 24px;">
+            <div class="page-header">
+                <h1 class="page-title">Payment History (2 items)</h1>
+                <div class="filters">
+                    <button class="filter-btn">
+                        <span class="material-icons">calendar_today</span> All
+                    </button>
+                    <button class="filter-btn">
+                        <span class="material-icons">filter_list</span> All
+                    </button>
+                </div>
+            </div>
+            <div class="history-list">
+                <div class="history-card">
+                    <div class="col"><span class="label">Description</span><span class="value">Payment</span></div>
+                    <div class="col"><span class="label">Payment Mode</span><span class="value">Online</span></div>
+                    <div class="col"><span class="label">Payment ID</span><span class="value val-id">E2511260PSAPZ8</span></div>
+                    <div class="col"><span class="label">Date</span><span class="value">26/11/2025, 04:44 pm</span></div>
+                    <div class="col"><span class="label">Amount</span><span class="value val-amount">₹1,31,250</span></div>
+                    <div class="col"><span class="label">Status</span><span class="status-badge status-success">Success</span></div>
+                </div>
+                <div class="history-card">
+                    <div class="col"><span class="label">Description</span><span class="value">Payment</span></div>
+                    <div class="col"><span class="label">Payment Mode</span><span class="value">Online</span></div>
+                    <div class="col"><span class="label">Payment ID</span><span class="value val-id">4624336305</span></div>
+                    <div class="col"><span class="label">Date</span><span class="value">26/11/2025, 04:46 pm</span></div>
+                    <div class="col"><span class="label">Amount</span><span class="value val-amount">₹20,000</span></div>
+                    <div class="col"><span class="label">Status</span><span class="status-badge status-success">Success</span></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. SETTINGS VIEW -->
+        <div id="settingsView" style="display: none; padding-top: 60px; padding-left: 24px; padding-right: 24px;">
+            <div class="settings-container">
+                <div class="settings-header">
+                    <h1 class="page-title">Account settings</h1>
+                    <p style="color: #cbd5e1; margin-top: 8px;">Manage your user account settings here.</p>
+                </div>
+                <div class="settings-card">
+                    <div class="settings-title">Profile Information</div>
+                    <div class="settings-subtitle">Update your personal information and profile photo.</div>
+                    <div style="margin-top: 24px;">
+                        <div class="settings-form-group">
+                            <label class="settings-label">Full Name</label>
+                            <input type="text" class="settings-input" value="tishika agarwal" placeholder="Enter full name">
+                        </div>
+                        <div class="settings-form-group">
+                            <label class="settings-label">Username</label>
+                            <input type="text" class="settings-input" value="tishutisribbttf" placeholder="Enter username">
+                        </div>
+                        <div class="settings-form-group">
+                            <label class="settings-label">Mobile Number</label>
+                            <div class="phone-group">
+                                <select class="phone-select"><option>IN (+91)</option><option>US (+1)</option></select>
+                                <input type="text" class="settings-input" value="9547790680" placeholder="Mobile Number">
+                            </div>
+                            <button class="btn-verify" onclick="alert('OTP Sent to your mobile number!')">Send OTP to verify</button>
+                        </div>
+                        <div class="settings-form-group">
+                            <label class="settings-label">Your Photo</label>
+                            <div class="photo-section">
+                                <div class="photo-preview"><span class="material-icons">person</span></div>
+                                <div>
+                                    <button class="btn-change-photo" onclick="document.getElementById('fileInput').click()">Change</button>
+                                    <input type="file" id="fileInput" style="display: none;">
+                                    <p style="color: #64748b; font-size: 0.85rem; margin-top: 8px;">This photo will be displayed everywhere on course pages.<br>Please upload a high-quality square photo.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <button class="btn-save" onclick="alert('Profile Updated Successfully!')">Save changes</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 4. DASHBOARD VIEW -->
+        <div id="dashboardView" style="display: none; padding-top: 60px; padding-left: 24px; padding-right: 24px;">
+            <div class="dashboard-container">
+                <div class="welcome-header">
+                    <h1 class="welcome-title">Welcome back, Tishika! 👋</h1>
+                    <p class="welcome-subtitle">Here's what's happening with your account today.</p>
+                </div>
+                <div class="stats-row">
+                    <div class="stat-box">
+                        <div class="stat-label"><span class="material-icons">account_balance_wallet</span> Wallet Balance</div>
+                        <div class="stat-number">₹1,250</div>
+                        <div class="stat-trend">+₹250 this week</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-label"><span class="material-icons">task_alt</span> Gigs Completed</div>
+                        <div class="stat-number">12</div>
+                        <div class="stat-trend">Top rated helper!</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-label"><span class="material-icons">pending_actions</span> Active Requests</div>
+                        <div class="stat-number">2</div>
+                        <div class="stat-trend" style="color:#f59e0b">Waiting for response</div>
+                    </div>
+                </div>
+                <h2 style="color:var(--text-main); margin-bottom:20px;">Recent Activity</h2>
+                <div class="history-list">
+                    <div class="history-card">
+                        <div class="col"><span class="label">Activity</span><span class="value">Math Tutoring</span></div>
+                        <div class="col"><span class="label">Type</span><span class="value">Provided</span></div>
+                        <div class="col"><span class="label">Date</span><span class="value">Today, 10:00 am</span></div>
+                        <div class="col"><span class="label">Status</span><span class="status-badge status-success">Completed</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 5. PROFILE VIEW -->
+        <div id="profileView" style="display: none; padding-bottom: 60px;">
+            <div class="profile-page-container">
+                <div class="profile-cover"></div>
+                <div class="profile-card">
+                    <div class="profile-avatar-large">
+                        <span class="placeholder-img">T</span>
+                    </div>
+                    <div class="profile-details">
+                        <div class="profile-name">Tishika Agarwal</div>
+                        <div class="profile-role">Computer Science • 2nd Year</div>
+                        <p class="profile-bio">
+                            Hey! I love coding and playing guitar. Happy to help juniors with Data Structures and Java. Also up for a jamming session on weekends! 🎸💻
+                        </p>
+                        <div class="skills-section">
+                            <div class="skills-title">Skills & Interests</div>
+                            <div class="skills-list">
+                                <span class="skill-tag">Java</span>
+                                <span class="skill-tag">Web Development</span>
+                                <span class="skill-tag">Guitar</span>
+                                <span class="skill-tag">Mathematics</span>
+                                <span class="skill-tag">Debating</span>
+                            </div>
+                        </div>
+                        <div style="margin-top: 30px; display:flex; gap:16px;">
+                            <button class="btn-main" style="padding:12px 24px; font-size:0.9rem;">Message</button>
+                            <button class="btn-outline" style="padding:12px 24px; font-size:0.9rem;">Share Profile</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- AUTH MODAL (LOGIN / SIGNUP) -->
+    <div class="auth-backdrop" id="authBackdrop">
+      <div class="auth-modal" id="authModal">
+        <div class="auth-header">
+          <div class="auth-title">Welcome to BuddyUp</div>
+          <button class="auth-close" id="authClose">&times;</button>
+        </div>
+        <div class="auth-tabs">
+          <button class="auth-tab active" data-tab="login">Log In</button>
+          <button class="auth-tab" data-tab="signup">Sign Up</button>
+        </div>
+        <form class="auth-form active" id="loginForm">
+          <div class="auth-group">
+            <label for="loginEmail">College Email</label>
+            <input type="email" id="loginEmail" placeholder="you@college.edu" required />
+          </div>
+          <div class="auth-group">
+            <label for="loginPassword">Password</label>
+            <input type="password" id="loginPassword" placeholder="Enter password" required />
+          </div>
+          <button type="submit" class="auth-submit">Log In</button>
+        </form>
+        <form class="auth-form" id="signupForm">
+          <div class="auth-group">
+            <label for="signupName">Full Name</label>
+            <input type="text" id="signupName" placeholder="Your name" required />
+          </div>
+          <div class="auth-group">
+            <label for="signupRoll">University Roll / ERP No.</label>
+            <input type="text" id="signupRoll" placeholder="Eg: BT23CSE050" required />
+          </div>
+          <div class="auth-group">
+            <label for="signupEmail">College Email</label>
+            <input type="email" id="signupEmail" placeholder="you@college.edu" required />
+          </div>
+          <div class="auth-group">
+            <label for="signupPassword">Password</label>
+            <input type="password" id="signupPassword" placeholder="Create password" required />
+          </div>
+          <button type="submit" class="auth-submit">Create Account</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- ADMIN LOGIN MODAL -->
+    <div class="auth-backdrop" id="adminLoginBackdrop">
+      <div class="auth-modal">
+        <div class="auth-header">
+          <div class="auth-title">Admin Login</div>
+          <button class="auth-close" id="adminLoginClose">&times;</button>
+        </div>
+        <form class="auth-form active" id="adminLoginForm">
+          <div class="auth-group">
+            <label for="adminEmail">Admin Email</label>
+            <input type="email" id="adminEmail" placeholder="admin@buddyup.com" required />
+          </div>
+          <div class="auth-group">
+            <label for="adminPassword">Password</label>
+            <input type="password" id="adminPassword" placeholder="Admin password" required />
+          </div>
+          <button type="submit" class="auth-submit">Log In as Admin</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- PAYMENT MODAL (Stripe-like) -->
+    <div id="paymentBackdrop" class="payment-backdrop">
+        <div class="checkout-modal">
+            <div class="checkout-grid">
+                <div class="summary-panel">
+                    <a id="back-payment-btn" class="back-link"><i class="fas fa-arrow-left"></i> Back to BuddyUp</a>
+                    <div class="order-title">Subscribe to BuddyUp Premium</div>
+                    <div class="order-price">₹99.00 <span style="font-size:1rem; color:#64748b; font-weight:400;">per month</span></div>
+                    <div class="line-item"><span>BuddyUp Premium</span><span>₹99.00</span></div>
+                    <div class="line-item"><span>Billed monthly</span><span>--</span></div>
+                    <div style="flex:1"></div>
+                    <div class="line-item" style="border-bottom:none; margin-top:20px;"><span>Subtotal</span><span>₹99.00</span></div>
+                    <div class="line-item" style="border-bottom:none; color:#64748b; font-size:0.9rem;"><span>Tax</span><span>Enter address to calculate</span></div>
+                    <div class="total-row"><span>Total due today</span><span>₹99.00</span></div>
+                </div>
+                <div class="payment-panel">
+                    <form id="payment-form">
+                        <div class="section-title">Contact information</div>
+                        <div class="input-group">
+                            <label class="label">Email</label>
+                            <input type="email" class="input-field" placeholder="you@example.com" required>
+                        </div>
+                        <div class="section-title">Payment method</div>
+                        <div class="radio-group">
+                            <div class="radio-option selected" data-method="card" id="opt-card">
+                                <div class="radio-circle"></div>
+                                <div class="option-label"><i class="fas fa-credit-card"></i> Card</div>
+                            </div>
+                            <div id="details-card" class="payment-details-form" style="display: block;">
+                                <div class="input-group"><input type="text" class="input-field" placeholder="Card number" maxlength="19" required></div>
+                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                                    <input type="text" class="input-field" placeholder="MM / YY" required>
+                                    <input type="text" class="input-field" placeholder="CVC" required>
+                                </div>
+                            </div>
+                            <div class="radio-option" data-method="upi" id="opt-upi">
+                                <div class="radio-circle"></div>
+                                <div class="option-label"><span class="upi-icon">UPI</span> Unified Payments Interface</div>
+                            </div>
+                            <div id="details-upi" class="payment-details-form">
+                                <div class="input-group" style="margin-bottom:0;"><label class="label">UPI ID / VPA</label><input type="text" class="input-field" placeholder="username@bank"></div>
+                            </div>
+                        </div>
+                        <div class="checkbox-group">
+                            <input type="checkbox" required checked>
+                            <label class="checkbox-text">You'll be charged the amount listed above every month. <a href="#">Cancel anytime</a>.</label>
+                        </div>
+                        <button type="submit" class="subscribe-btn" id="pay-btn">Subscribe<div class="spinner"></div></button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+      /* ---------- VIEW SWITCHING LOGIC ---------- */
+      const landingView = document.getElementById('landingView');
+      const historyView = document.getElementById('historyView');
+      const settingsView = document.getElementById('settingsView');
+      const dashboardView = document.getElementById('dashboardView');
+      const profileView = document.getElementById('profileView');
+      
+      const navHomeBtn = document.getElementById('navHomeBtn');
+      const navHistoryBtn = document.getElementById('navHistoryBtn');
+      const navDashboardBtn = document.getElementById('navDashboardBtn');
+      const navProfileBtn = document.getElementById('navProfileBtn');
+
+      function switchView(viewName) {
+          // Reset all views
+          landingView.style.display = 'none';
+          historyView.style.display = 'none';
+          settingsView.style.display = 'none';
+          dashboardView.style.display = 'none';
+          profileView.style.display = 'none';
+          
+          // Reset nav state
+          navHomeBtn.classList.remove('active');
+          navHistoryBtn.classList.remove('active');
+          navDashboardBtn.classList.remove('active');
+          navProfileBtn.classList.remove('active');
+
+          if (viewName === 'history') {
+              historyView.style.display = 'block';
+              navHistoryBtn.classList.add('active');
+          } else if (viewName === 'settings') {
+              settingsView.style.display = 'block';
+          } else if (viewName === 'dashboard') {
+              dashboardView.style.display = 'block';
+              navDashboardBtn.classList.add('active');
+          } else if (viewName === 'profile') {
+              profileView.style.display = 'block';
+              navProfileBtn.classList.add('active');
+          } else {
+              landingView.style.display = 'block';
+              navHomeBtn.classList.add('active');
+          }
+      }
+
+      /* ---------- SIDE NAV & NOTIFICATIONS ---------- */
+      const menuToggle = document.getElementById("menuToggle");
+      const sideNav = document.getElementById("sideNav");
+      const sideLinks = document.querySelectorAll(".side-link");
+      const overlay = document.getElementById("overlay");
+      
+      // Notifications
+      const notifBtn = document.getElementById('notifBtn');
+      const notifMenu = document.getElementById('notifMenu');
+      notifBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          notifMenu.classList.toggle('active');
+      });
+      document.addEventListener('click', (e) => {
+          if(!notifBtn.contains(e.target)) notifMenu.classList.remove('active');
+      });
+
+      function openSidebar() { sideNav.classList.add("open"); overlay.classList.add("show"); }
+      function closeSidebar() { sideNav.classList.remove("open"); overlay.classList.remove("show"); }
+
+      menuToggle.addEventListener("click", () => {
+        if (sideNav.classList.contains("open")) closeSidebar(); else openSidebar();
+      });
+
+      // Handle Side Links
+      sideLinks.forEach((link) => {
+        link.addEventListener("click", (e) => {
+             if(link.id === 'navPaymentBtn') { openPaymentModal(); closeSidebar(); return; }
+             if(link.id === 'navHistoryBtn') { switchView('history'); closeSidebar(); return; }
+             if(link.id === 'navDashboardBtn') { switchView('dashboard'); closeSidebar(); return; }
+             if(link.id === 'navProfileBtn') { switchView('profile'); closeSidebar(); return; }
+             if(link.id === 'navHomeBtn') { switchView('landing'); closeSidebar(); return; }
+             closeSidebar();
+        });
+      });
+      overlay.addEventListener("click", closeSidebar);
+
+      /* ---------- SCROLL ANIMATIONS ---------- */
+      const revealElements = document.querySelectorAll('.reveal');
+      const revealObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('active'); });
+      }, { threshold: 0.1 });
+      revealElements.forEach(el => revealObserver.observe(el));
+
+      /* ---------- PROFILE DROPDOWN & LOGOUT ---------- */
+      const profileTrigger = document.getElementById('profileTrigger');
+      const profileMenu = document.getElementById('profileMenu');
+      const menuSettingsBtn = document.getElementById('menuSettingsBtn');
+      const menuProfileBtn = document.getElementById('menuProfileBtn');
+      const logoutBtn = document.getElementById('logoutBtn');
+
+      profileTrigger.addEventListener('click', (e) => { e.stopPropagation(); profileMenu.classList.toggle('active'); });
+      document.addEventListener('click', (e) => {
+        if (!profileTrigger.contains(e.target) && !profileMenu.contains(e.target)) profileMenu.classList.remove('active');
+      });
+      
+      if(menuSettingsBtn) menuSettingsBtn.addEventListener('click', () => { switchView('settings'); profileMenu.classList.remove('active'); });
+      if(menuProfileBtn) menuProfileBtn.addEventListener('click', () => { switchView('profile'); profileMenu.classList.remove('active'); });
+      if(logoutBtn) logoutBtn.addEventListener('click', () => { 
+          if(confirm('Are you sure you want to log out?')) {
+              alert('Logged out successfully.');
+              window.location.reload();
+          }
+      });
+
+      /* ---------- AUTH & ADMIN ---------- */
+      const loginBtn = document.getElementById("loginBtn");
+      const signupBtn = document.getElementById("signupBtn");
+      const authBackdrop = document.getElementById("authBackdrop");
+      const authClose = document.getElementById("authClose");
+      const authTabs = document.querySelectorAll(".auth-tab");
+      const authForms = document.querySelectorAll(".auth-form");
+      const loginForm = document.getElementById("loginForm");
+      const signupForm = document.getElementById("signupForm");
+      const REDIRECT_URL = "provider-consumer.html";
+
+      function openAuth(tabName) { authBackdrop.classList.add("show"); switchTab(tabName); }
+      function closeAuth() { authBackdrop.classList.remove("show"); }
+      function switchTab(tabName) {
+        authTabs.forEach((tab) => { tab.classList.toggle("active", tab.dataset.tab === tabName); });
+        authForms.forEach((form) => { form.classList.toggle("active", form.id === tabName + "Form"); });
+      }
+
+      loginBtn.addEventListener("click", () => openAuth("login"));
+      signupBtn.addEventListener("click", () => openAuth("signup"));
+      authClose.addEventListener("click", closeAuth);
+      authBackdrop.addEventListener("click", (e) => { if (e.target === authBackdrop) closeAuth(); });
+      authTabs.forEach((tab) => { tab.addEventListener("click", () => switchTab(tab.dataset.tab)); });
+      loginForm.addEventListener("submit", (e) => { e.preventDefault(); window.location.href = REDIRECT_URL; });
+      signupForm.addEventListener("submit", (e) => { e.preventDefault(); window.location.href = REDIRECT_URL; });
+
+      const openAdminBtn = document.getElementById('openAdminBtn');
+      const adminLoginBackdrop = document.getElementById('adminLoginBackdrop');
+      const adminLoginClose = document.getElementById('adminLoginClose');
+      const adminLoginForm = document.getElementById('adminLoginForm');
+
+      openAdminBtn.addEventListener('click', (e) => { e.preventDefault(); adminLoginBackdrop.classList.add('show'); });
+      adminLoginClose.addEventListener('click', () => { adminLoginBackdrop.classList.remove('show'); });
+      adminLoginBackdrop.addEventListener('click', (e) => { if(e.target === adminLoginBackdrop) adminLoginBackdrop.classList.remove('show'); });
+      adminLoginForm.addEventListener('submit', (e) => { e.preventDefault(); window.location.href = 'admin_dashboard.html'; });
+
+      /* ---------- PAYMENT LOGIC ---------- */
+      const paymentBackdrop = document.getElementById('paymentBackdrop');
+      const backPaymentBtn = document.getElementById('back-payment-btn');
+      const optCard = document.getElementById('opt-card');
+      const optUpi = document.getElementById('opt-upi');
+      const detailsCard = document.getElementById('details-card');
+      const detailsUpi = document.getElementById('details-upi');
+      const payBtn = document.getElementById('pay-btn');
+      const paymentForm = document.getElementById('payment-form');
+
+      function openPaymentModal() { paymentBackdrop.classList.add('active'); }
+      function closePaymentModal() { paymentBackdrop.classList.remove('active'); }
+
+      backPaymentBtn.addEventListener('click', closePaymentModal);
+      paymentBackdrop.addEventListener('click', (e) => { if(e.target === paymentBackdrop) closePaymentModal(); });
+
+      optCard.addEventListener('click', () => {
+          optCard.classList.add('selected'); optUpi.classList.remove('selected');
+          detailsCard.style.display = 'block'; detailsUpi.style.display = 'none';
+          detailsCard.querySelectorAll('input').forEach(i => i.required = true);
+          detailsUpi.querySelectorAll('input').forEach(i => i.required = false);
+      });
+
+      optUpi.addEventListener('click', () => {
+          optUpi.classList.add('selected'); optCard.classList.remove('selected');
+          detailsUpi.style.display = 'block'; detailsCard.style.display = 'none';
+          detailsCard.querySelectorAll('input').forEach(i => i.required = false);
+          detailsUpi.querySelectorAll('input').forEach(i => i.required = true);
+      });
+
+      paymentForm.addEventListener('submit', (e) => {
+          e.preventDefault();
+          payBtn.disabled = true;
+          payBtn.querySelector('.spinner').style.display = 'block';
+          payBtn.childNodes[0].textContent = 'Processing...';
+          setTimeout(() => {
+              payBtn.style.backgroundColor = '#00c851';
+              payBtn.childNodes[0].textContent = 'Success!';
+              payBtn.querySelector('.spinner').style.display = 'none';
+              setTimeout(() => {
+                  alert('Subscription Active! Welcome to BuddyUp Premium.');
+                  closePaymentModal();
+                  payBtn.disabled = false;
+                  payBtn.style.backgroundColor = '#10a37f';
+                  payBtn.childNodes[0].textContent = 'Subscribe';
+                  paymentForm.reset();
+              }, 1000);
+          }, 2000);
+      });
+    </script>
+  </body>
+</html>
