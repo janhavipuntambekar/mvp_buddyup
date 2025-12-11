@@ -1,0 +1,751 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>BuddyUp – Choose Your Skills</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- Inter + Material Icons -->
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/icon?family=Material+Icons"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      :root {
+        --primary: #60a5fa;
+        --secondary: #a78bfa;
+        --accent: #2dd4bf;
+
+        --bg-main: radial-gradient(circle at top, #1d4ed8 0, #020617 40%, #020617 100%);
+        --card-bg: rgba(15, 23, 42, 0.9);
+        --border: rgba(148, 163, 184, 0.35);
+
+        --text-main: #e5e7eb;
+        --text-muted: #9ca3af;
+
+        --shadow-lg: 0 28px 80px rgba(15, 23, 42, 0.9);
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Inter", sans-serif;
+      }
+
+      /* ====== PAGE BACKGROUND (like front page) ====== */
+      body {
+        min-height: 100vh;
+        background:
+          radial-gradient(circle at 0% 0%, rgba(96, 165, 250, 0.25), transparent 55%),
+          radial-gradient(circle at 100% 100%, rgba(139, 92, 246, 0.25), transparent 55%),
+          linear-gradient(135deg, #020617 0%, #020617 40%, #020617 100%);
+        color: var(--text-main);
+        padding: 40px 18px 120px;
+        overflow-y: auto;
+      }
+
+      /* ====== MAIN GLASS WRAPPER ====== */
+      .wrapper {
+        width: 100%;
+        max-width: 1180px;
+        margin: 0 auto;
+        background:
+          radial-gradient(circle at top left, rgba(96, 165, 250, 0.2), transparent 60%),
+          radial-gradient(circle at bottom right, rgba(139, 92, 246, 0.22), transparent 60%),
+          rgba(15, 23, 42, 0.96);
+        border-radius: 32px;
+        border: 1px solid rgba(148, 163, 184, 0.28);
+        box-shadow: var(--shadow-lg);
+        padding: 32px 40px 26px;
+        backdrop-filter: blur(26px);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .wrapper::before {
+        content: "";
+        position: absolute;
+        width: 520px;
+        height: 520px;
+        background: radial-gradient(circle, rgba(56, 189, 248, 0.25), transparent 70%);
+        top: -260px;
+        left: -260px;
+        opacity: 0.8;
+        pointer-events: none;
+      }
+
+      .wrapper::after {
+        content: "";
+        position: absolute;
+        width: 520px;
+        height: 520px;
+        background: radial-gradient(circle, rgba(129, 140, 248, 0.3), transparent 70%);
+        bottom: -260px;
+        right: -260px;
+        opacity: 0.7;
+        pointer-events: none;
+      }
+
+      @media (max-width: 900px) {
+        .wrapper {
+          padding: 22px 18px 22px;
+          border-radius: 26px;
+        }
+      }
+
+      /* ====== HEADER ROW ====== */
+      .header-row {
+        position: relative;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 32px;
+        gap: 12px;
+        z-index: 1;
+      }
+
+      .logo {
+        font-weight: 900;
+        font-size: 1.4rem;
+        letter-spacing: -0.05em;
+        cursor: default;
+      }
+
+      .logo span {
+        background: linear-gradient(90deg, #60a5fa, #a855f7, #22c55e);
+        -webkit-background-clip: text;
+        color: transparent;
+      }
+
+      .header-right {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 0.9rem;
+        color: var(--text-muted);
+      }
+
+      .pill {
+        padding: 8px 16px;
+        border-radius: 999px;
+        border: 1px solid rgba(148, 163, 184, 0.55);
+        font-size: 0.78rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: rgba(15, 23, 42, 0.85);
+        box-shadow: 0 0 16px rgba(34, 197, 94, 0.25);
+      }
+
+      .pill .dot {
+        width: 7px;
+        height: 7px;
+        border-radius: 999px;
+        background: #22c55e;
+        box-shadow: 0 0 10px rgba(34, 197, 94, 0.9);
+      }
+
+      /* ====== MAIN GRID (LEFT TEXT + RIGHT PANEL) ====== */
+      .main {
+        position: relative;
+        z-index: 1;
+        display: grid;
+        grid-template-columns: minmax(0, 1.1fr) minmax(0, 1.4fr);
+        gap: 36px;
+        margin-bottom: 28px;
+      }
+
+      @media (max-width: 960px) {
+        .main {
+          grid-template-columns: 1fr;
+          gap: 32px;
+        }
+      }
+
+      .intro {
+        padding-right: 14px;
+      }
+
+      .hello {
+        font-size: 0.98rem;
+        color: var(--text-muted);
+        margin-bottom: 8px;
+      }
+
+      .hello span {
+        color: #f9fafb;
+        font-weight: 600;
+      }
+
+      h1 {
+        font-size: clamp(2.2rem, 4vw, 2.8rem);
+        line-height: 1.18;
+        letter-spacing: -0.05em;
+        margin-bottom: 14px;
+      }
+
+      h1 span {
+        background: linear-gradient(90deg, #60a5fa, #a855f7, #22c55e);
+        -webkit-background-clip: text;
+        color: transparent;
+      }
+
+      .subtitle {
+        font-size: 1rem;
+        color: var(--text-muted);
+        max-width: 420px;
+        line-height: 1.7;
+        margin-bottom: 20px;
+      }
+
+      .mini-bullets {
+        list-style: none;
+        margin-bottom: 22px;
+      }
+
+      .mini-bullets li {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        font-size: 0.93rem;
+        color: #e5e7eb;
+        margin-bottom: 9px;
+      }
+
+      .mini-bullets .bullet-dot {
+        margin-top: 6px;
+        width: 7px;
+        height: 7px;
+        border-radius: 999px;
+        background: #60a5fa;
+        box-shadow: 0 0 10px rgba(59, 130, 246, 0.8);
+        flex-shrink: 0;
+      }
+
+      .tip {
+        font-size: 0.82rem;
+        color: var(--text-muted);
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 9px 12px;
+        border-radius: 999px;
+        border: 1px dashed rgba(148, 163, 184, 0.85);
+        background: rgba(15, 23, 42, 0.8);
+      }
+
+      .tip span.material-icons {
+        font-size: 15px;
+      }
+
+      /* ====== RIGHT PANEL ====== */
+      .panel {
+        background: radial-gradient(circle at top left, rgba(37, 99, 235, 0.4), transparent 60%),
+          radial-gradient(circle at bottom right, rgba(109, 40, 217, 0.4), transparent 65%),
+          rgba(15, 23, 42, 0.98);
+        border-radius: 26px;
+        border: 1px solid rgba(148, 163, 184, 0.55);
+        padding: 20px 20px 18px;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        box-shadow: 0 18px 45px rgba(15, 23, 42, 0.95);
+      }
+
+      .panel-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 14px;
+      }
+
+      .panel-title {
+        font-size: 0.96rem;
+        font-weight: 600;
+        margin-bottom: 2px;
+      }
+
+      .panel-subtitle {
+        font-size: 0.8rem;
+        color: var(--text-muted);
+        max-width: 260px;
+      }
+
+      .toggle-row {
+        display: inline-flex;
+        padding: 4px;
+        border-radius: 999px;
+        background: rgba(15, 23, 42, 0.92);
+        border: 1px solid rgba(148, 163, 184, 0.8);
+        gap: 3px;
+      }
+
+      .toggle-btn {
+        border-radius: 999px;
+        border: none;
+        padding: 7px 13px;
+        font-size: 0.78rem;
+        font-weight: 500;
+        background: transparent;
+        color: var(--text-muted);
+        cursor: pointer;
+        transition: all 0.15s ease;
+        white-space: nowrap;
+      }
+
+      .toggle-btn.active {
+        background: radial-gradient(circle at top left, #3b82f6, #a855f7);
+        color: #f9fafb;
+        box-shadow: 0 8px 20px rgba(59, 130, 246, 0.6);
+      }
+
+      .columns {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+        margin-top: 8px;
+      }
+
+      @media (max-width: 640px) {
+        .columns {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      .col-card {
+        background: radial-gradient(circle at top, rgba(30, 64, 175, 0.75), transparent 70%),
+          rgba(15, 23, 42, 0.98);
+        border-radius: 20px;
+        padding: 14px 13px 12px;
+        border: 1px solid rgba(148, 163, 184, 0.7);
+        box-shadow: 0 14px 30px rgba(15, 23, 42, 0.8);
+      }
+
+      .col-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 9px;
+      }
+
+      .col-title {
+        font-size: 0.9rem;
+        font-weight: 600;
+      }
+
+      .col-chip-count {
+        font-size: 0.78rem;
+        color: var(--text-muted);
+      }
+
+      .chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 9px;
+      }
+
+      .chip {
+        border-radius: 999px;
+        border: 1px solid rgba(148, 163, 184, 0.7);
+        padding: 7px 13px;
+        font-size: 0.82rem;
+        cursor: pointer;
+        color: var(--text-muted);
+        background: rgba(15, 23, 42, 0.95);
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        transition: all 0.12s ease-out;
+      }
+
+      .chip span.material-icons {
+        font-size: 15px;
+        opacity: 0;
+        transform: scale(0.7);
+        transition: all 0.12s;
+      }
+
+      .chip.selected {
+        background: radial-gradient(circle at top left, rgba(59, 130, 246, 0.9), rgba(76, 29, 149, 1));
+        border-color: rgba(219, 234, 254, 0.95);
+        color: #f9fafb;
+        box-shadow: 0 10px 22px rgba(37, 99, 235, 0.9);
+      }
+
+      .chip.selected span.material-icons {
+        opacity: 1;
+        transform: scale(1);
+      }
+
+      /* ====== BOTTOM ROW ====== */
+      .bottom-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 14px;
+        margin-top: 10px;
+        padding-top: 10px;
+        border-top: 1px solid rgba(15, 23, 42, 0.9);
+      }
+
+      .summary-text {
+        font-size: 0.8rem;
+        color: var(--text-muted);
+      }
+
+      .summary-text strong {
+        color: #e5e7eb;
+      }
+
+      .btn-primary {
+        border-radius: 999px;
+        border: none;
+        padding: 10px 22px;
+        font-size: 0.87rem;
+        font-weight: 600;
+        background: linear-gradient(90deg, #22c55e, #16a34a);
+        color: #f9fafb;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        box-shadow: 0 10px 24px rgba(34, 197, 94, 0.65);
+        transition: transform 0.12s, box-shadow 0.12s, filter 0.12s;
+        white-space: nowrap;
+      }
+
+      .btn-primary:hover {
+        transform: translateY(-1px);
+        filter: brightness(1.04);
+      }
+
+      .btn-primary span.material-icons {
+        font-size: 17px;
+      }
+
+      /* ====== FOOTER ====== */
+      .footer {
+        position: relative;
+        z-index: 1;
+        margin-top: 22px;
+        padding-top: 14px;
+        border-top: 1px solid rgba(15, 23, 42, 0.85);
+        font-size: 0.78rem;
+        color: rgba(148, 163, 184, 0.92);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .footer a {
+        color: rgba(191, 219, 254, 0.95);
+        text-decoration: none;
+        border-bottom: 1px dashed rgba(148, 163, 184, 0.8);
+      }
+
+      .footer a:hover {
+        color: #e5e7eb;
+        border-bottom-style: solid;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrapper">
+      <div class="header-row">
+        <div class="logo">Buddy<span>Up</span></div>
+        <div class="header-right">
+          <span class="pill">
+            <span class="dot"></span>
+            Step 2 of 2 · Setup
+          </span>
+        </div>
+      </div>
+
+      <div class="main">
+        <!-- LEFT SIDE -->
+        <div class="intro">
+          <div class="hello">
+            Hey, <span id="userName">there</span> 👋
+          </div>
+          <h1>
+            What do you want to <span>learn</span> &amp> what can you
+            <span>teach?</span>
+          </h1>
+          <p class="subtitle">
+            Pick a few things you’re interested in. You can always change this
+            later from your profile.
+          </p>
+
+          <ul class="mini-bullets">
+            <li>
+              <span class="bullet-dot"></span>
+              Learners discover helpers inside the same campus.
+            </li>
+            <li>
+              <span class="bullet-dot"></span>
+              Helpers get matched to relevant requests automatically.
+            </li>
+            <li>
+              <span class="bullet-dot"></span>
+              Clean, no-whatsapp-spam way to connect.
+            </li>
+          </ul>
+
+          <div class="tip">
+            <span class="material-icons">tips_and_updates</span>
+            Pro tip: tick at least 2 skills in each side to get better matches.
+          </div>
+        </div>
+
+        <!-- RIGHT SIDE: SKILL SELECT PANEL -->
+        <div class="panel">
+          <div class="panel-header">
+            <div>
+              <div class="panel-title">Tell us your vibe</div>
+              <div class="panel-subtitle">
+                Choose skills you’d like to learn &amp; the ones you’re happy to
+                help with.
+              </div>
+            </div>
+
+            <div class="toggle-row">
+              <button class="toggle-btn active" id="bothToggle">
+                Learn &amp; Teach
+              </button>
+              <button class="toggle-btn" id="onlyLearnToggle">Only Learn</button>
+              <button class="toggle-btn" id="onlyTeachToggle">Only Teach</button>
+            </div>
+          </div>
+
+          <div class="columns">
+            <!-- LEARN COLUMN -->
+            <div class="col-card" id="learnCol">
+              <div class="col-header">
+                <div class="col-title">I want to learn</div>
+                <div class="col-chip-count" id="learnCount">0 selected</div>
+              </div>
+              <div class="chips" id="learnChips">
+                <div class="chip" data-type="learn" data-skill="DSA / Coding">
+                  <span class="material-icons">check</span> DSA / Coding
+                </div>
+                <div class="chip" data-type="learn" data-skill="Web Dev">
+                  <span class="material-icons">check</span> Web Dev
+                </div>
+                <div class="chip" data-type="learn" data-skill="UI/UX">
+                  <span class="material-icons">check</span> UI / UX
+                </div>
+                <div class="chip" data-type="learn" data-skill="Guitar">
+                  <span class="material-icons">check</span> Guitar
+                </div>
+                <div class="chip" data-type="learn" data-skill="Dance / Choreo">
+                  <span class="material-icons">check</span> Dance / Choreo
+                </div>
+                <div
+                  class="chip"
+                  data-type="learn"
+                  data-skill="Public Speaking"
+                >
+                  <span class="material-icons">check</span> Public speaking
+                </div>
+                <div
+                  class="chip"
+                  data-type="learn"
+                  data-skill="Resume / LinkedIn"
+                >
+                  <span class="material-icons">check</span> Resume / LinkedIn
+                </div>
+                <div
+                  class="chip"
+                  data-type="learn"
+                  data-skill="Exam Help / Doubts"
+                >
+                  <span class="material-icons">check</span> Exam help / doubts
+                </div>
+              </div>
+            </div>
+
+            <!-- TEACH COLUMN -->
+            <div class="col-card" id="teachCol">
+              <div class="col-header">
+                <div class="col-title">I can teach / help with</div>
+                <div class="col-chip-count" id="teachCount">0 selected</div>
+              </div>
+              <div class="chips" id="teachChips">
+                <div class="chip" data-type="teach" data-skill="DSA / Coding">
+                  <span class="material-icons">check</span> DSA / Coding
+                </div>
+                <div class="chip" data-type="teach" data-skill="Web Dev">
+                  <span class="material-icons">check</span> Web Dev
+                </div>
+                <div class="chip" data-type="teach" data-skill="UI/UX">
+                  <span class="material-icons">check</span> UI / UX
+                </div>
+                <div class="chip" data-type="teach" data-skill="Guitar">
+                  <span class="material-icons">check</span> Guitar
+                </div>
+                <div class="chip" data-type="teach" data-skill="Dance / Choreo">
+                  <span class="material-icons">check</span> Dance / Choreo
+                </div>
+                <div
+                  class="chip"
+                  data-type="teach"
+                  data-skill="Notes / Past Papers"
+                >
+                  <span class="material-icons">check</span> Notes / past papers
+                </div>
+                <div
+                  class="chip"
+                  data-type="teach"
+                  data-skill="Poster / Canva"
+                >
+                  <span class="material-icons">check</span> Posters / Canva
+                </div>
+                <div
+                  class="chip"
+                  data-type="teach"
+                  data-skill="Competition Prep"
+                >
+                  <span class="material-icons">check</span> Competition prep
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="bottom-row">
+            <div class="summary-text" id="summaryText">
+              <strong>0</strong> learn skills · <strong>0</strong> teach skills
+              selected.
+            </div>
+            <button class="btn-primary" id="continueBtn">
+              Continue to dashboard
+              <span class="material-icons">arrow_forward</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer">
+        <span
+          >You're setting up your BuddyUp profile. This helps us recommend
+          better matches.</span
+        >
+        <span
+          >Not sure yet?
+          <a href="#" id="skipLink">Skip for now</a></span
+        >
+      </div>
+    </div>
+
+    <script>
+      // --- Prefill name from localStorage (set in index.html fakeAuthStore) ---
+      const userNameSpan = document.getElementById("userName");
+      const storedName = localStorage.getItem("buddyupUserName");
+      if (storedName && storedName.trim() !== "") {
+        userNameSpan.textContent = storedName.split(" ")[0];
+      }
+
+      // --- Chip selection logic ---
+      const learnChipsContainer = document.getElementById("learnChips");
+      const teachChipsContainer = document.getElementById("teachChips");
+      const learnCountEl = document.getElementById("learnCount");
+      const teachCountEl = document.getElementById("teachCount");
+      const summaryTextEl = document.getElementById("summaryText");
+      const continueBtn = document.getElementById("continueBtn");
+
+      function updateCountsAndSummary() {
+        const selectedLearn = document.querySelectorAll(
+          '.chip.selected[data-type="learn"]'
+        ).length;
+        const selectedTeach = document.querySelectorAll(
+          '.chip.selected[data-type="teach"]'
+        ).length;
+
+        learnCountEl.textContent = `${selectedLearn} selected`;
+        teachCountEl.textContent = `${selectedTeach} selected`;
+        summaryTextEl.innerHTML = `<strong>${selectedLearn}</strong> learn skills · <strong>${selectedTeach}</strong> teach skills selected.`;
+      }
+
+      function handleChipClick(e) {
+        const chip = e.target.closest(".chip");
+        if (!chip) return;
+        chip.classList.toggle("selected");
+        updateCountsAndSummary();
+      }
+
+      learnChipsContainer.addEventListener("click", handleChipClick);
+      teachChipsContainer.addEventListener("click", handleChipClick);
+
+      // --- Toggle: Learn & Teach / Only Learn / Only Teach ---
+      const bothToggle = document.getElementById("bothToggle");
+      const onlyLearnToggle = document.getElementById("onlyLearnToggle");
+      const onlyTeachToggle = document.getElementById("onlyTeachToggle");
+      const learnCol = document.getElementById("learnCol");
+      const teachCol = document.getElementById("teachCol");
+
+      function setMode(mode) {
+        [bothToggle, onlyLearnToggle, onlyTeachToggle].forEach((btn) =>
+          btn.classList.remove("active")
+        );
+
+        if (mode === "both") {
+          bothToggle.classList.add("active");
+          learnCol.style.display = "";
+          teachCol.style.display = "";
+        } else if (mode === "learn") {
+          onlyLearnToggle.classList.add("active");
+          learnCol.style.display = "";
+          teachCol.style.display = "none";
+        } else {
+          onlyTeachToggle.classList.add("active");
+          learnCol.style.display = "none";
+          teachCol.style.display = "";
+        }
+      }
+
+      bothToggle.addEventListener("click", () => setMode("both"));
+      onlyLearnToggle.addEventListener("click", () => setMode("learn"));
+      onlyTeachToggle.addEventListener("click", () => setMode("teach"));
+
+      // --- Save selection + continue ---
+      continueBtn.addEventListener("click", () => {
+        const selectedLearn = Array.from(
+          document.querySelectorAll('.chip.selected[data-type="learn"]')
+        ).map((chip) => chip.dataset.skill);
+
+        const selectedTeach = Array.from(
+          document.querySelectorAll('.chip.selected[data-type="teach"]')
+        ).map((chip) => chip.dataset.skill);
+
+        localStorage.setItem(
+          "buddyupLearnSkills",
+          JSON.stringify(selectedLearn)
+        );
+        localStorage.setItem(
+          "buddyupTeachSkills",
+          JSON.stringify(selectedTeach)
+        );
+
+        // ⬇️ changed: go back to home
+        window.location.href = "index.html";
+      });
+
+      // Skip link – just go ahead without saving anything special
+      const skipLink = document.getElementById("skipLink");
+      skipLink.addEventListener("click", (e) => {
+        e.preventDefault();
+        // ⬇️ changed: go back to home
+        window.location.href = "index.html";
+      });
+
+      // Initial
+      updateCountsAndSummary();
+    </script>
+  </body>
+</html>
